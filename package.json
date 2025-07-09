@@ -12,8 +12,8 @@
   "main": "./lib/index.js",
   "exports": "./lib/index.js",
   "scripts": {
-    "build": "tsc -b",
-    "watch": "tsc -b -w",
+    "build": "tsc --project src/tsconfig.json",
+    "watch": "tsc --project src/tsconfig.json -w",
     "test": "node --test",
     "lint": "eslint",
     "check-format": "prettier \"{src,test}/**/*.{ts,tsx}\" --check",
