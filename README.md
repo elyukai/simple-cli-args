@@ -5,5 +5,5 @@ Parses command line arguments to the script call with the set of options and sub
 ## Install
 
 ```sh
-npm install simple-args
+npm install simple-cli-args
 ```
