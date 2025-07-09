@@ -1,0 +1,45 @@
+{
+  "name": "simple-args",
+  "version": "0.1.0",
+  "description": "",
+  "license": "MPL-2.0",
+  "author": "Lukas Obermann",
+  "type": "module",
+  "files": [
+    "lib/**/*.d.ts",
+    "lib/**/*.js"
+  ],
+  "main": "./lib/index.js",
+  "exports": "./lib/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "watch": "tsc -b -w",
+    "test": "node --test",
+    "lint": "eslint",
+    "check-format": "prettier \"{src,test}/**/*.{ts,tsx}\" --check",
+    "format": "prettier \"{src,test}/**/*.{ts,tsx}\" --write",
+    "release": "commit-and-tag-version"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.12",
+    "commit-and-tag-version": "^12.5.1",
+    "eslint": "^9.30.1",
+    "globals": "^16.3.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.36.0"
+  },
+  "repository": "github:elyukai/simple-args",
+  "bugs": {
+    "url": "https://github.com/elyukai/simple-args/issues"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=23.6.0"
+    }
+  }
+}
