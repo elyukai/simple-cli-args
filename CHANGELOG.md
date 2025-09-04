@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.2](https://github.com/elyukai/simple-cli-args/compare/v0.1.1...v0.1.2) (2025-09-04)
+
+
+### Features
+
+* options and commands type inference ([07fc0f8](https://github.com/elyukai/simple-cli-args/commit/07fc0f86ad68da48e7866ec4d63b9426c6491260)), closes [#1](https://github.com/elyukai/simple-cli-args/issues/1)
+
 ## [0.1.1](https://github.com/elyukai/simple-cli-args/compare/v0.1.0...v0.1.1) (2025-09-04)
 
 
