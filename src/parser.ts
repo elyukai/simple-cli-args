@@ -1,5 +1,5 @@
 import type { Arguments, CommandConfigs, Option, OptionConfigs } from "./options.ts"
-import type { ParsedArguments } from "./parsedOptions.ts"
+import type { ParsedArguments, ParsedLevel } from "./parsedOptions.ts"
 
 const testEqualsOption = /^(--[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)=(.+)/
 
@@ -60,7 +60,7 @@ const parseMultipleOption = (
 }
 
 const parseLevel = (
-  parsed: ParsedArguments,
+  parsed: ParsedLevel<OptionConfigs, CommandConfigs>,
   optionConfigs: OptionConfigs,
   commandConfigs: CommandConfigs,
   args: string[],
@@ -72,8 +72,10 @@ const parseLevel = (
   if (option) {
     const [optionKey, optionSettings] = option
 
+    parsed.options ??= {}
+
     if (optionSettings.type === Boolean) {
-      ;(parsed.options ??= {})[optionKey] = !arg.startsWith("--no-")
+      ;(parsed.options[optionKey] as unknown as boolean) = !arg.startsWith("--no-")
       return 0
     } else {
       const nextArg = args[currentIndex + 1]
@@ -82,7 +84,7 @@ const parseLevel = (
       }
 
       if (optionSettings.multiple === true) {
-        const values: unknown[] = ((parsed.options ??= {})[optionKey] = [])
+        const values: unknown[] = ((parsed.options[optionKey] as unknown as unknown[]) = [])
         parseMultipleOption(
           values,
           optionConfigs,
@@ -95,7 +97,7 @@ const parseLevel = (
         return values.length
       } else {
         const optionArg = optionSettings.type?.(nextArg) ?? nextArg
-        ;(parsed.options ??= {})[optionKey] = optionArg
+        ;(parsed.options[optionKey] as unknown as typeof optionArg) = optionArg
         return 1
       }
     }
@@ -113,11 +115,11 @@ const parseLevel = (
   throw new SyntaxError(`unknown argument "${arg}"`)
 }
 
-export const parse = (argsConfig: Arguments, rawArgs: string[]) => {
+export const parse = <A extends Arguments>(argsConfig: A, rawArgs: string[]) => {
   const args = splitArgs(rawArgs)
-  const parsedArguments: ParsedArguments = {}
+  const parsedArguments: ParsedArguments<A> = {}
 
-  let currentParsed = parsedArguments
+  let currentParsed: ParsedLevel<OptionConfigs, CommandConfigs> = parsedArguments
   let currentOptionConfigs = argsConfig.options ?? {}
   let currentCommandConfigs = argsConfig.commands ?? {}
 
