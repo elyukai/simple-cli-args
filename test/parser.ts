@@ -181,4 +181,39 @@ describe("parse", () => {
       ),
     )
   })
+
+  it("parses multiple values for an option and stops at the next option or command", () => {
+    deepEqual(
+      parse(
+        {
+          options: {
+            mult: {
+              name: "mult",
+              type: String,
+              multiple: true,
+            },
+            num: {
+              name: "num",
+              type: Number.parseFloat,
+            },
+          },
+          commands: {
+            a: {
+              name: "aa",
+            },
+          },
+        },
+        ["--mult", "a", "b", "--num", "0", "aa"],
+      ),
+      {
+        options: {
+          mult: ["a", "b"],
+          num: 0,
+        },
+        command: {
+          name: "a",
+        },
+      },
+    )
+  })
 })

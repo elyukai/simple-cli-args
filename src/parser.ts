@@ -1,4 +1,4 @@
-import type { Arguments, CommandConfigs, OptionConfigs } from "./options.ts"
+import type { Arguments, CommandConfigs, Option, OptionConfigs } from "./options.ts"
 import type { ParsedArguments } from "./parsedOptions.ts"
 
 const testEqualsOption = /^(--[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)=(.+)/
@@ -30,6 +30,35 @@ const findCommand = (commandConfigs: CommandConfigs, arg: string) =>
 //   arg: string,
 // ) => findOption(optionConfigs, arg) !== undefined || findCommand(commandConfigs, arg) !== undefined
 
+const parseMultipleOption = (
+  values: unknown[],
+  optionConfigs: OptionConfigs,
+  commandConfigs: CommandConfigs,
+  optionSettings: Option<unknown, boolean>,
+  args: string[],
+  arg: string,
+  currentIndex: number,
+): void => {
+  if (!findOption(optionConfigs, arg) && !findCommand(commandConfigs, arg)) {
+    const optionArg = optionSettings.type?.(arg) ?? arg
+    values.push(optionArg)
+
+    const nextIndex = currentIndex + 1
+    const nextArg = args[nextIndex]
+    if (nextArg !== undefined) {
+      parseMultipleOption(
+        values,
+        optionConfigs,
+        commandConfigs,
+        optionSettings,
+        args,
+        nextArg,
+        nextIndex,
+      )
+    }
+  }
+}
+
 const parseLevel = (
   parsed: ParsedArguments,
   optionConfigs: OptionConfigs,
@@ -47,15 +76,28 @@ const parseLevel = (
       ;(parsed.options ??= {})[optionKey] = !arg.startsWith("--no-")
       return 0
     } else {
-      if (currentIndex === args.length - 1) {
+      const nextArg = args[currentIndex + 1]
+      if (nextArg === undefined) {
         throw new SyntaxError(`missing argument for option "${arg}"`)
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const consumedNextArg = args[currentIndex + 1]!
-      const optionArg = optionSettings.type?.(consumedNextArg) ?? consumedNextArg
-      ;(parsed.options ??= {})[optionKey] = optionArg
-      return 1
+      if (optionSettings.multiple === true) {
+        const values: unknown[] = ((parsed.options ??= {})[optionKey] = [])
+        parseMultipleOption(
+          values,
+          optionConfigs,
+          commandConfigs,
+          optionSettings,
+          args,
+          nextArg,
+          currentIndex + 1,
+        )
+        return values.length
+      } else {
+        const optionArg = optionSettings.type?.(nextArg) ?? nextArg
+        ;(parsed.options ??= {})[optionKey] = optionArg
+        return 1
+      }
     }
   }
 
